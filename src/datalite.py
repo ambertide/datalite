@@ -126,6 +126,17 @@ def is_fetchable(class_: type, obj_id: int) -> bool:
     return bool(cur.fetchall())
 
 
+def _get_table_cols(cur: sql.Cursor, table_name: str) -> List[str]:
+    """
+    Get the column data of a table.
+    :param cur: Cursor in database.
+    :param table_name: Name of the table.
+    :return: the information about columns.
+    """
+    cur.execute(f"PRAGMA table_info({table_name});")
+    return [row_info[1] for row_info in cur.fetchall()][1:]
+
+
 def fetch_from(class_: type, obj_id: int) -> Any:
     """
     Fetch a class_ type variable from its bound db.
@@ -137,14 +148,52 @@ def fetch_from(class_: type, obj_id: int) -> Any:
     if not is_fetchable(class_, obj_id):
         raise KeyError(f"An object with the id {obj_id} in table {table_name} does not exist."
                        f"or is otherwise unable to be fetched.")
+    with sql.connect(getattr(class_, 'db_path')) as con:
+        cur: sql.Cursor = con.cursor()
+        cur.execute(f"SELECT * FROM {class_.__name__.lower()} WHERE obj_id = {obj_id};")  # Guaranteed to work.
+        field_values: List[str] = list(cur.fetchone())[1:]
+        field_names: List[str] = _get_table_cols(cur, class_.__name__.lower())
+    kwargs = dict(zip(field_names, field_values))
+    obj = class_(**kwargs)
+    setattr(obj, "obj_id", obj_id)
+    return obj
 
 
+def fetch_range(class_: type, range_: range) -> tuple:
+    """
+    Fetch the records in a given range of object ids.
+    :param class_: Class of the records.
+    :param range_: Range of the object ids.
+    :return: A tuple of class_ type objects whose values
+    come from the class_' bound database.
+    """
+    return tuple(fetch_from(class_, obj_id) for obj_id in range_ if is_fetchable(class_, obj_id))
 
 
-if __name__ == "__main__":
-    @sqlify(db_path="db.db")
-    @dataclass
-    class Student:
-        student_id: int
-        student_name: str = "John Smith"
-    is_fetchable(Student, 2)
+def fetch_all(class_: type) -> tuple:
+    """
+    Fetchall the records in the bound database.
+    :param class_: Class of the records.
+    :return: All the records of type class_ in
+    the bound database as a tuple.
+    """
+    try:
+        db_path = getattr(class_, 'db_path')
+    except AttributeError:
+        raise TypeError("Given class is not decorated with datalite.")
+    with sql.connect(db_path) as con:
+        cur: sql.Cursor = con.cursor()
+        try:
+            cur.execute(f"SELECT * FROM {class_.__name__.lower()}")
+        except sql.OperationalError:
+            raise TypeError(f"No record of type {class_.__name__.lower()}")
+        records = cur.fetchall()
+        field_names: List[str] = _get_table_cols(cur, class_.__name__.lower())
+    objects: List[class_] = []
+    for record in records:
+        kwargs = dict(zip(field_names, record[1:]))
+        obj_id = record[0]
+        obj = class_(**kwargs)
+        setattr(obj, "obj_id", obj_id)
+        objects.append(obj)
+    return tuple(objects)
