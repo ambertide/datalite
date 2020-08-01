@@ -25,17 +25,44 @@ table name `student` and rows `student_id`, `student_name` with datatypes
 integer and text, respectively. The default value for `student_name` is
 `John Smith`.
 
-## Creating a new object instance
+## Entry manipulation
 
-If you create a new object with default Python methods, the object will not 
-be inserted into the table by default. However, the classes that are created
-with `datalite` has a argument in their init method. So, if you write
-`Student(1, create_entry=True)` rather than just saying `Student(1)`, the
-entry equivalent of the newly created student will be inserted into
-the table without any problems.
+After creating an object traditionally, given that you used the `sqlify` decorator,
+the object has two new methods: `.create_entry()` and `.remove_entry()`, you
+can add the object to its associated table using the former, and remove it
+using the latter.
 
-## Deleting an object instance
+```python
+student = Student(10, "Albert Einstein")
+student.create_entry()  # Adds the entry to the table associated in db.db
+student.remove_entry()  # Removes from the table.
+```
 
-Another method that is added to any dataclass created with `datalite` is the
-`.remove()` method. By deleting a class with the `.remove()` you will also
-delete its equivalent entry from the database.
+But what if you have created your object in a previous session, or wish
+to remove an object unreachable? ie: If the object is already garbage 
+collected by the Python interpreter? `remove_from(class_, obj_id)` is
+a function that can be used for this express purpose, for instance:
+
+```python
+remove_from(Student, 2)  # Removes the Student with obj_id 2.
+```
+
+Object IDs are auto-incremented, and correspond to the order the entry were
+inserted onto the system.
+
+## Fetching Records
+Finally, you may wish to recreate objects from a table that already exist, for
+this purpose we have the function `fetch_from(class_, object_id)` as well
+as `is_fetchable(className, object_id)` former fetches a record from the
+SQL database whereas the latter checks if it is fetchable (most likely
+to check if it exists.)
+
+```python
+>>> fetch_from(Student, 2)
+Student(student_id=10, student_name='Albert Einstein')
+```
+
+Finally, we have two helper methods, `fetch_range(class_, range_)` and
+`fetch_all(class_)` the former fetches the records fetchable from the object
+id range provided by the user, whereas the latter fetches all records. Both
+return a tuple of `class_` objects.

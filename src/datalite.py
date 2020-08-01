@@ -1,26 +1,8 @@
 from os.path import exists
 from pathlib import Path
 import sqlite3 as sql
-from dataclasses import Field, asdict
+from dataclasses import Field, asdict, dataclass
 from typing import List, Dict, Optional, Callable, Any
-
-
-def _database_exists(db_path: str) -> bool:
-    """
-    Check if a given database exists.
-    :param db_path: Relative path of the database, including the extension.
-    :return: True if database exists, False otherwise.
-    """
-    return exists(db_path)
-
-
-def _create_db(db_path: str) -> None:
-    """
-    Create the database file.
-    :param db_path: Relative path of the database file, including the extension.
-    :return: None.
-    """
-    Path(db_path).touch()
 
 
 def _convert_type(type_: Optional[type], type_overload: Dict[Optional[type], str]) -> str:
@@ -90,45 +72,30 @@ def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional
     cursor.execute(f"CREATE TABLE IF NOT EXISTS {class_.__name__.lower()} ({sql_fields});")
 
 
-def _create_entry(self, cur: sql.Cursor) -> None:
+def _create_entry(self) -> None:
     """
     Given an object, create the entry for the object. As a side-effect,
     this will set the object_id attribute of the object to the unique
     id of the entry.
     :param cur: Cursor of the database.
     :param self: Instance of the object.
-    :param args: Initialisation arguments.
-    :param kwargs: Initialisation keyword arguments.
     :return: None.
     """
-    table_name: str = self.__class__.__name__.lower()
-    kv_pairs = [item for item in asdict(self).items()]
-    kv_pairs.sort(key=lambda item: item[0])  # Sort by the name of the fields.
-    cur.execute(f"INSERT INTO {table_name}("
-                f"{', '.join(item[0] for item in kv_pairs)})"
-                f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
-    self.__setattr__("obj_id", cur.lastrowid)
-
-
-def _modify_init(dataclass_: type):
-    def modifier(self, *args, **kwargs):
-        self.__init__()
-        if "create_entry" in kwargs and kwargs["create_entry"]:
-            try:
-                with sql.connect(dataclass_.__db_path__) as con:
-                    cur: sql.Cursor = con.cursor()
-                    self._create_entry(cur)
-                    con.commit()
-            except AttributeError:
-                raise TypeError("Are you sure this is a datalite class?")
-    return modifier
+    with sql.connect(getattr(self, "db_path")) as con:
+        cur: sql.Cursor = con.cursor()
+        table_name: str = self.__class__.__name__.lower()
+        kv_pairs = [item for item in asdict(self).items()]
+        kv_pairs.sort(key=lambda item: item[0])  # Sort by the name of the fields.
+        cur.execute(f"INSERT INTO {table_name}("
+                    f"{', '.join(item[0] for item in kv_pairs)})"
+                    f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
+        self.__setattr__("obj_id", cur.lastrowid)
+        con.commit()
 
 
 def sqlify(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None,
            *args, **kwargs) -> Callable:
     def decorator(dataclass_: type, *args_i, **kwargs_i):
-        if not _database_exists(db_path):
-            _create_db(db_path)
         type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
                                                  str: "TEXT", bytes: "BLOB"}
         if type_overload is not None:
@@ -136,7 +103,48 @@ def sqlify(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = No
         with sql.connect(db_path) as con:
             cur: sql.Cursor = con.cursor()
             _create_table(dataclass_, cur, type_table)
-        dataclass_.__db_path__ == db_path  # We add the path of the database to class itself.
-        dataclass_.__init__ = _modify_init(dataclass_)  # Replace the init method.
+        setattr(dataclass_, 'db_path', db_path)  # We add the path of the database to class itself.
+        dataclass_.create_entry = _create_entry
         return dataclass_
     return decorator
+
+
+def is_fetchable(class_: type, obj_id: int) -> bool:
+    """
+    Check if a record is fetchable given its obj_id and
+    class_ type.
+    :param class_: Class type of the object.
+    :param obj_id: Unique obj_id of the object.
+    :return: If the object is fetchable.
+    """
+    with sql.connect(getattr(class_, 'db_path')) as con:
+        cur: sql.Cursor = con.cursor()
+        try:
+            cur.execute(f"SELECT 1 FROM {class_.__name__.lower()} WHERE obj_id = {obj_id};")
+        except sql.OperationalError:
+            raise KeyError(f"Table {class_.__name__.lower()} does not exist.")
+    return bool(cur.fetchall())
+
+
+def fetch_from(class_: type, obj_id: int) -> Any:
+    """
+    Fetch a class_ type variable from its bound db.
+    :param class_: Class to fetch.
+    :param obj_id: Unique object id of the class.
+    :return: The object whose data is taken from the database.
+    """
+    table_name = class_.__name__.lower()
+    if not is_fetchable(class_, obj_id):
+        raise KeyError(f"An object with the id {obj_id} in table {table_name} does not exist."
+                       f"or is otherwise unable to be fetched.")
+
+
+
+
+if __name__ == "__main__":
+    @sqlify(db_path="db.db")
+    @dataclass
+    class Student:
+        student_id: int
+        student_name: str = "John Smith"
+    is_fetchable(Student, 2)
