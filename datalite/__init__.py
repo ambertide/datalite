@@ -186,7 +186,7 @@ def _convert_record_to_object(class_: type, record: Tuple[Any], field_names: Lis
     return obj
 
 
-def fetch_when(class_: type, condition: str) -> tuple:
+def fetch_if(class_: type, condition: str) -> tuple:
     """
     Fetch all class_ type variables from the bound db,
     provided they fit the given condition
@@ -215,7 +215,7 @@ def fetch_range(class_: type, range_: range) -> tuple:
     return tuple(fetch_from(class_, obj_id) for obj_id in range_ if is_fetchable(class_, obj_id))
 
 
-def fetch_if(class_: type) -> tuple:
+def fetch_all(class_: type) -> tuple:
     """
     Fetchall the records in the bound database.
     :param class_: Class of the records.
