@@ -199,8 +199,8 @@ def fetch_if(class_: type, condition: str) -> tuple:
     with sql.connect(getattr(class_, 'db_path')) as con:
         cur: sql.Cursor = con.cursor()
         cur.execute(f"SELECT * FROM {table_name} WHERE {condition};")
-        field_names: List[str] = _get_table_cols(cur, table_name)
         records: list = cur.fetchall()
+        field_names: List[str] = _get_table_cols(cur, table_name)
     return tuple(_convert_record_to_object(class_, record, field_names) for record in records)
 
 
