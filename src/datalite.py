@@ -1,8 +1,9 @@
-from os.path import exists
-from pathlib import Path
 import sqlite3 as sql
 from dataclasses import Field, asdict, dataclass
 from typing import List, Dict, Optional, Callable, Any
+
+
+
 
 
 def _convert_type(type_: Optional[type], type_overload: Dict[Optional[type], str]) -> str:
@@ -12,6 +13,8 @@ def _convert_type(type_: Optional[type], type_overload: Dict[Optional[type], str
     :param type_: A Python type, or None.
     :param type_overload: A type table to overload the custom type table.
     :return: The str name of the sql type.
+    >>> _convert_type(int)
+    "INTEGER"
     """
     try:
         return type_overload[type_]
@@ -77,7 +80,6 @@ def _create_entry(self) -> None:
     Given an object, create the entry for the object. As a side-effect,
     this will set the object_id attribute of the object to the unique
     id of the entry.
-    :param cur: Cursor of the database.
     :param self: Instance of the object.
     :return: None.
     """
@@ -93,8 +95,20 @@ def _create_entry(self) -> None:
         con.commit()
 
 
-def sqlify(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None,
-           *args, **kwargs) -> Callable:
+def _remove_entry(self) -> None:
+    """
+    Remove the object's record in the underlying database.
+    :param self: self instance.
+    :return: None.
+    """
+    with sql.connect(getattr(self, "db_path")) as con:
+        cur: sql.Cursor = con.cursor()
+        cur.execute(f"DELETE FROM {self.__class__.__name__.lower()} WHERE obj_id = {self.obj_id}")
+        con.commit()
+
+
+def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None,
+             *args, **kwargs) -> Callable:
     def decorator(dataclass_: type, *args_i, **kwargs_i):
         type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
                                                  str: "TEXT", bytes: "BLOB"}
@@ -107,6 +121,7 @@ def sqlify(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = No
         dataclass_.create_entry = _create_entry
         return dataclass_
     return decorator
+
 
 
 def is_fetchable(class_: type, obj_id: int) -> bool:
