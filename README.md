@@ -52,6 +52,7 @@ inserted onto the system.
 
 ## Fetching Records
 > :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float and str!
+
 Finally, you may wish to recreate objects from a table that already exist, for
 this purpose we have the function `fetch_from(class_, object_id)` as well
 as `is_fetchable(className, object_id)` former fetches a record from the
