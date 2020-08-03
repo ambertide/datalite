@@ -3,17 +3,17 @@
 Datalite is a simple Python
 package that binds your dataclasses to a table in a sqlite3 database,
 using it is extremely simple, say that you have a dataclass definition,
-just add the decorator `@sqlify(db_name="db.db")` to the top of the
+just add the decorator `@datalite(db_name="db.db")` to the top of the
 definition, and the dataclass will now be bound to the file `db.db`
 
 For example:
 
 ```python
 from dataclasses import dataclass
-from datalite import sqlify
+from datalite import datalite
 
 
-@sqlify(db_path="db.db")
+@datalite(db_path="db.db")
 @dataclass
 class Student:
     student_id: int
@@ -27,7 +27,7 @@ integer and text, respectively. The default value for `student_name` is
 
 ## Entry manipulation
 
-After creating an object traditionally, given that you used the `sqlify` decorator,
+After creating an object traditionally, given that you used the `datalite` decorator,
 the object has two new methods: `.create_entry()` and `.remove_entry()`, you
 can add the object to its associated table using the former, and remove it
 using the latter.
