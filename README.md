@@ -64,7 +64,11 @@ to check if it exists.)
 Student(student_id=10, student_name='Albert Einstein')
 ```
 
-Finally, we have two helper methods, `fetch_range(class_, range_)` and
-`fetch_all(class_)` the former fetches the records fetchable from the object
-id range provided by the user, whereas the latter fetches all records. Both
-return a tuple of `class_` objects.
+We have three helper methods, `fetch_range(class_, range_)` and
+`fetch_all(class_)` are very similar: the former fetches the records
+fetchable from the object id range provided by the user, whereas the
+latter fetches all records. Both return a tuple of `class_` objects.
+
+The last helper method, `fetch_if(class_, condition)` fetches all
+the records of type `class_` that fit a certain condition. Here conditions
+must be written is SQL syntax.
