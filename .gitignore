@@ -1,5 +1,5 @@
 .idea/*
-src/__pycache__/*
+datalite/__pycache__/*
 *.pyc
 src/*.db
 build/*
