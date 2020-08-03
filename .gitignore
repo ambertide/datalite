@@ -1,8 +1,7 @@
 .idea/*
 datalite/__pycache__/*
 *.pyc
-src/*.db
+datalite/*.db
 build/*
-
 datalite.egg-info/*
 dist/*
