@@ -92,16 +92,20 @@ def _create_entry(self) -> None:
         con.commit()
 
 
+def remove_from(class_: type, obj_id: int):
+    with sql.connect(getattr(class_, "db_path")) as con:
+        cur: sql.Cursor = con.cursor()
+        cur.execute(f"DELETE FROM {class_.__name__.lower()} WHERE obj_id = {obj_id}")
+        con.commit()
+
+
 def _remove_entry(self) -> None:
     """
     Remove the object's record in the underlying database.
     :param self: self instance.
     :return: None.
     """
-    with sql.connect(getattr(self, "db_path")) as con:
-        cur: sql.Cursor = con.cursor()
-        cur.execute(f"DELETE FROM {self.__class__.__name__.lower()} WHERE obj_id = {self.obj_id}")
-        con.commit()
+    remove_from(self.__class__, getattr(self, 'obj_id'))
 
 
 def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None,
@@ -116,9 +120,9 @@ def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = 
             _create_table(dataclass_, cur, type_table)
         setattr(dataclass_, 'db_path', db_path)  # We add the path of the database to class itself.
         dataclass_.create_entry = _create_entry
+        dataclass_.remove_entry = _remove_entry
         return dataclass_
     return decorator
-
 
 
 def is_fetchable(class_: type, obj_id: int) -> bool:
