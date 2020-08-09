@@ -92,6 +92,23 @@ def _create_entry(self) -> None:
         con.commit()
 
 
+def _update_entry(self) -> None:
+    """
+    Given an object, update the objects entry in the bound database.
+    :param self: The object.
+    :return: None.
+    """
+    with sql.connect(getattr(self, "db_path")) as con:
+        cur: sql.Cursor = con.cursor()
+        table_name: str = self.__clas__.__name__.lower()
+        kv_pairs = [item for item in asdict(self).items()]
+        kv_pairs.sort(key=lambda item: item[0])
+        cur.execute(f"UPDATE {table_name}"
+                    f"SET {', '.join(item[0] + ' = ' + _convert_sql_format(item[1]) for item in kv_pairs)}"
+                    f"WHERE obj_id = {getattr(self, 'obj_id')}")
+        con.commit()
+
+
 def remove_from(class_: type, obj_id: int):
     with sql.connect(getattr(class_, "db_path")) as con:
         cur: sql.Cursor = con.cursor()
@@ -121,6 +138,7 @@ def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = 
         setattr(dataclass_, 'db_path', db_path)  # We add the path of the database to class itself.
         dataclass_.create_entry = _create_entry
         dataclass_.remove_entry = _remove_entry
+        dataclass_.update_entry = _update_entry
         return dataclass_
     return decorator
 

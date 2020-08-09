@@ -1,5 +1,8 @@
 # Datalite
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/9d4ce56bfbd3b63649be/maintainability)](https://codeclimate.com/github/ambertide/datalite/maintainability)
+
+
 Datalite is a simple Python
 package that binds your dataclasses to a table in a sqlite3 database,
 using it is extremely simple, say that you have a dataclass definition,
@@ -28,13 +31,16 @@ integer and text, respectively. The default value for `student_name` is
 ## Entry manipulation
 
 After creating an object traditionally, given that you used the `datalite` decorator,
-the object has two new methods: `.create_entry()` and `.remove_entry()`, you
-can add the object to its associated table using the former, and remove it
-using the latter.
+the object has three new methods: `.create_entry()`, `.update_entry()`
+and `.remove_entry()`, you can add the object to its associated table 
+using the former, and remove it using the later. You can also update a record using
+the middle.
 
 ```python
 student = Student(10, "Albert Einstein")
-student.create_entry()  # Adds the entry to the table associated in db.db
+student.create_entry()  # Adds the entry to the table associated in db.db.
+student.student_id = 20 # Update an object on memory.
+student.update_entry()  # Update the corresponding record in the database.
 student.remove_entry()  # Removes from the table.
 ```
 
