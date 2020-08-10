@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install setuptools wheel twine
+          pip install -r requirments.txt
       - name: Test & publish code coverage
         uses: paambaati/codeclimate-action@v2.6.0
         env:
