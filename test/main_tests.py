@@ -82,6 +82,10 @@ class DatabaseFetchCalls(unittest.TestCase):
         t_obj = fetch_from(FetchClass, self.objs[0].obj_id)
         self.assertEqual(self.objs[0], t_obj)
 
+    def testFetchFromDif(self):
+        t_obj = fetch_from(FetchClass, self.objs[0].str_, 'str_')
+        self.assertEqual(self.objs[0], t_obj)
+
     def testFetchAll(self):
         t_objs = fetch_all(FetchClass)
         self.assertEqual(tuple(self.objs), t_objs)
@@ -96,6 +100,7 @@ class DatabaseFetchCalls(unittest.TestCase):
 
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]
+
 
 if __name__ == '__main__':
     unittest.main()

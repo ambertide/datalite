@@ -62,10 +62,11 @@ inserted onto the system.
 > :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float and str!
 
 Finally, you may wish to recreate objects from a table that already exist, for
-this purpose we have the function `fetch_from(class_, object_id)` as well
+this purpose we have the function `fetch_from(class_, value, field)` as well
 as `is_fetchable(className, object_id)` former fetches a record from the
-SQL database whereas the latter checks if it is fetchable (most likely
-to check if it exists.)
+SQL database given a field and value. If only the value is provided,
+ field defaults to 'obj_id' which is unique for all objects,
+ whereas the latter checks if it is fetchable (most likely to check if it exists.)
 
 ```python
 >>> fetch_from(Student, 2)

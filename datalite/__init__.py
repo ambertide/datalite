@@ -171,21 +171,19 @@ def _get_table_cols(cur: sql.Cursor, table_name: str) -> List[str]:
     return [row_info[1] for row_info in cur.fetchall()][1:]
 
 
-def fetch_from(class_: type, obj_id: int) -> Any:
+def fetch_from(class_: type, value: Any, field: str = 'obj_id') -> Any:
     """
     Fetch a class_ type variable from its bound db.
     :param class_: Class to fetch.
-    :param obj_id: Unique object id of the class.
+    :param field: Field to check for, by default, object id.
+    :param value: Value of the field to check for.
     :return: The object whose data is taken from the database.
     """
     table_name = class_.__name__.lower()
-    if not is_fetchable(class_, obj_id):
-        raise KeyError(f"An object with the id {obj_id} in table {table_name} does not exist."
-                       f"or is otherwise unable to be fetched.")
     with sql.connect(getattr(class_, 'db_path')) as con:
         cur: sql.Cursor = con.cursor()
-        cur.execute(f"SELECT * FROM {class_.__name__.lower()} WHERE obj_id = {obj_id};")  # Guaranteed to work.
-        field_values: List[str] = list(cur.fetchone())[1:]
+        cur.execute(f"SELECT * FROM {table_name} WHERE {field} = {_convert_sql_format(value)};")
+        obj_id, *field_values = list(cur.fetchone())
         field_names: List[str] = _get_table_cols(cur, class_.__name__.lower())
     kwargs = dict(zip(field_names, field_values))
     obj = class_(**kwargs)
