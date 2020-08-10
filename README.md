@@ -62,22 +62,23 @@ inserted onto the system.
 > :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float and str!
 
 Finally, you may wish to recreate objects from a table that already exist, for
-this purpose we have the function `fetch_from(class_, value, field)` as well
+this purpose we have the function `fetch_from(class_, obj_id)` as well
 as `is_fetchable(className, object_id)` former fetches a record from the
-SQL database given a field and value. If only the value is provided,
- field defaults to 'obj_id' which is unique for all objects,
- whereas the latter checks if it is fetchable (most likely to check if it exists.)
+SQL database given its unique object_id  whereas the latter checks if it 
+is fetchable (most likely to check if it exists.)
 
 ```python
 >>> fetch_from(Student, 2)
 Student(student_id=10, student_name='Albert Einstein')
 ```
 
-We have three helper methods, `fetch_range(class_, range_)` and
+We have four helper methods, `fetch_range(class_, range_)` and
 `fetch_all(class_)` are very similar: the former fetches the records
 fetchable from the object id range provided by the user, whereas the
 latter fetches all records. Both return a tuple of `class_` objects.
 
-The last helper method, `fetch_if(class_, condition)` fetches all
+The last two helper methods, `fetch_if(class_, condition)` fetches all
 the records of type `class_` that fit a certain condition. Here conditions
-must be written is SQL syntax. Be careful about the string espacially.
+must be written is SQL syntax. For easier, only one conditional checks, there
+is `fetch_equals(class_, field, value)` that checks the value of only one `field`
+and returns the object whose `field` equals the provided `value`.

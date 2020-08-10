@@ -171,7 +171,7 @@ def _get_table_cols(cur: sql.Cursor, table_name: str) -> List[str]:
     return [row_info[1] for row_info in cur.fetchall()][1:]
 
 
-def fetch_from(class_: type, value: Any, field: str = 'obj_id') -> Any:
+def fetch_equals(class_: type, field: str, value: Any, ) -> Any:
     """
     Fetch a class_ type variable from its bound db.
     :param class_: Class to fetch.
@@ -189,6 +189,19 @@ def fetch_from(class_: type, value: Any, field: str = 'obj_id') -> Any:
     obj = class_(**kwargs)
     setattr(obj, "obj_id", obj_id)
     return obj
+
+
+def fetch_from(class_: type, obj_id: int) -> Any:
+    """
+    Fetch a class_ type variable from its bound dv.
+    :param class_: Class to fetch from.
+    :param obj_id: Unique object id of the object.
+    :return: The fetched object.
+    """
+    if not is_fetchable(class_, obj_id):
+        raise KeyError(f"An object with {obj_id} of type {class_.__name__} does not exist, or"
+                       f"otherwise is unreachable.")
+    return fetch_equals(class_, 'obj_id', obj_id)
 
 
 def _convert_record_to_object(class_: type, record: Tuple[Any], field_names: List[str]) -> Any:

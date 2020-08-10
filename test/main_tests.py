@@ -1,5 +1,5 @@
 import unittest
-from datalite import datalite, fetch_if, fetch_all, fetch_range, fetch_from
+from datalite import datalite, fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
 from os import remove
@@ -82,8 +82,8 @@ class DatabaseFetchCalls(unittest.TestCase):
         t_obj = fetch_from(FetchClass, self.objs[0].obj_id)
         self.assertEqual(self.objs[0], t_obj)
 
-    def testFetchFromDif(self):
-        t_obj = fetch_from(FetchClass, self.objs[0].str_, 'str_')
+    def testFetchEquals(self):
+        t_obj = fetch_equals(FetchClass, 'str_', self.objs[0].str_)
         self.assertEqual(self.objs[0], t_obj)
 
     def testFetchAll(self):
