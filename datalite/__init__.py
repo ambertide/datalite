@@ -32,6 +32,8 @@ def _convert_sql_format(value: Any) -> str:
     """
     if isinstance(value, str):
         return f'"{value}"'
+    elif isinstance(value, bytes):
+        return '"' + str(value).replace("b'", "")[:-1] + '"'
     else:
         return str(value)
 
@@ -47,10 +49,7 @@ def _get_default(default_object: object, type_overload: Dict[Optional[type], str
     empty string if no string is necessary.
     """
     if type(default_object) in type_overload:
-        if isinstance(default_object, str):
-            return f' DEFAULT "{default_object}"'
-        else:
-            return f" DEFAULT {str(default_object)}"
+        return f' DEFAULT {_convert_sql_format(default_object)}'
     return ""
 
 
@@ -100,12 +99,13 @@ def _update_entry(self) -> None:
     """
     with sql.connect(getattr(self, "db_path")) as con:
         cur: sql.Cursor = con.cursor()
-        table_name: str = self.__clas__.__name__.lower()
+        table_name: str = self.__class__.__name__.lower()
         kv_pairs = [item for item in asdict(self).items()]
         kv_pairs.sort(key=lambda item: item[0])
-        cur.execute(f"UPDATE {table_name}"
-                    f"SET {', '.join(item[0] + ' = ' + _convert_sql_format(item[1]) for item in kv_pairs)}"
-                    f"WHERE obj_id = {getattr(self, 'obj_id')}")
+        query = f"UPDATE {table_name} " + \
+                f"SET {', '.join(item[0] + ' = ' + _convert_sql_format(item[1]) for item in kv_pairs)}" + \
+                f"WHERE obj_id = {getattr(self, 'obj_id')};"
+        cur.execute(query)
         con.commit()
 
 
@@ -202,6 +202,10 @@ def _convert_record_to_object(class_: type, record: Tuple[Any], field_names: Lis
     :return: the created object.
     """
     kwargs = dict(zip(field_names, record[1:]))
+    field_types = {key: value.type for key, value in class_.__dataclass_fields__.items()}
+    for key in kwargs:
+        if field_types[key] == bytes:
+            kwargs[key] = bytes(kwargs[key], encoding='utf-8')
     obj_id = record[0]
     obj = class_(**kwargs)
     setattr(obj, "obj_id", obj_id)

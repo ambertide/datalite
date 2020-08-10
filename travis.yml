@@ -1,0 +1,26 @@
+dist: trusty
+language: python
+python:
+  - "3.8"
+# command to install dependencies
+install:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - pip install -r requirments.txt
+# for codecoverage on codeclimate.com
+env:
+  global:
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+    - CODECLIMATE_REPO_TOKEN=[token]
+    - CC_TEST_REPORTER_ID=[id]
+
+before_script:
+  - ./cc-test-reporter before-build
+
+script:
+  - "coverage run -m unittest test/main_tests.py"
+
+after_script:
+  - coverage xml
+  - if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_PYTHON_VERSION" == "3.6" ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+# command to run tests
