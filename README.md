@@ -1,7 +1,9 @@
 # Datalite
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/9d4ce56bfbd3b63649be/maintainability)](https://codeclimate.com/github/ambertide/datalite/maintainability)
-
+[![Test Coverage](https://api.codeclimate.com/v1/badges/9d4ce56bfbd3b63649be/test_coverage)](https://codeclimate.com/github/ambertide/datalite/test_coverage)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/datalite.svg)](https://pypi.python.org/pypi/datalite/)
+[![PyPI license](https://img.shields.io/pypi/l/datalite.svg)](https://pypi.python.org/pypi/datalite/)
 
 Datalite is a simple Python
 package that binds your dataclasses to a table in a sqlite3 database,

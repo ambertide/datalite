@@ -1,9 +1,5 @@
 import unittest
-try:
-    from datalite import datalite
-except ModuleNotFoundError:
-    import importlib
-    importlib.import_module('datalite', '../datalite/')
+from datalite import datalite, fetch_if, fetch_all, fetch_range, fetch_from
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
 from os import remove
@@ -16,6 +12,16 @@ class TestClass:
     byte_value: bytes = b'a'
     float_value: float = 0.4
     str_value: str = 'a'
+
+    def __eq__(self, other):
+        return asdict(self) == asdict(other)
+
+
+@datalite(db_path='test.db')
+@dataclass
+class FetchClass:
+    ordinal: int
+    str_: str
 
     def __eq__(self, other):
         return asdict(self) == asdict(other)
@@ -65,6 +71,31 @@ class DatabaseMain(unittest.TestCase):
             objects = cur.fetchall()
         self.assertEqual(len(objects), init_len)
 
+
+
+class DatabaseFetchCalls(unittest.TestCase):
+    def setUp(self) -> None:
+        self.objs = [FetchClass(1, 'a'), FetchClass(2, 'b'), FetchClass(3, 'b')]
+        [obj.create_entry() for obj in self.objs]
+
+    def testFetchFrom(self):
+        t_obj = fetch_from(FetchClass, self.objs[0].obj_id)
+        self.assertEqual(self.objs[0], t_obj)
+
+    def testFetchAll(self):
+        t_objs = fetch_all(FetchClass)
+        self.assertEqual(tuple(self.objs), t_objs)
+
+    def testFetchIf(self):
+        t_objs = fetch_if(FetchClass, "str_ = \"b\"")
+        self.assertEqual(tuple(self.objs[1:]), t_objs)
+
+    def testFetchRange(self):
+        t_objs = fetch_range(FetchClass, range(self.objs[0].obj_id, self.objs[2].obj_id))
+        self.assertEqual(tuple(self.objs[0:2]), t_objs)
+
+    def tearDown(self) -> None:
+        [obj.remove_entry() for obj in self.objs]
 
 if __name__ == '__main__':
     unittest.main()
