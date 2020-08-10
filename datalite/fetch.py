@@ -1,7 +1,6 @@
 import sqlite3 as sql
 from typing import List, Tuple, Any
-
-from commons import _convert_sql_format
+from .commons import _convert_sql_format
 
 
 def is_fetchable(class_: type, obj_id: int) -> bool:

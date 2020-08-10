@@ -1,7 +1,7 @@
 from typing import Dict, Optional, List, Callable
 from dataclasses import Field, asdict
 import sqlite3 as sql
-from commons import _convert_sql_format, _convert_type
+from .commons import _convert_sql_format, _convert_type
 
 def _get_default(default_object: object, type_overload: Dict[Optional[type], str]) -> str:
     """
