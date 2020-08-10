@@ -241,6 +241,19 @@ def fetch_if(class_: type, condition: str) -> tuple:
     return tuple(_convert_record_to_object(class_, record, field_names) for record in records)
 
 
+def fetch_where(class_: type, field: str, value: Any) -> tuple:
+    """
+    Fetch all class_ type variables from the bound db,
+    provided that the field of the records fit the
+    given value.
+    :param class_: Class of the records.
+    :param field: Field to check.
+    :param value: Value to check for.
+    :return: A tuple of the records.
+    """
+    return fetch_if(class_, f"{field} = {_convert_sql_format(value)}")
+
+
 def fetch_range(class_: type, range_: range) -> tuple:
     """
     Fetch the records in a given range of object ids.
