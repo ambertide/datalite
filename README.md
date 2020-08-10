@@ -59,20 +59,20 @@ Object IDs are auto-incremented, and correspond to the order the entry were
 inserted onto the system.
 
 ## Fetching Records
-> :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float and str!
+> :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float, bytes and str!
 
 Finally, you may wish to recreate objects from a table that already exist, for
-this purpose we have the function `fetch_from(class_, obj_id)` as well
-as `is_fetchable(className, object_id)` former fetches a record from the
-SQL database given its unique object_id  whereas the latter checks if it 
-is fetchable (most likely to check if it exists.)
+this purpose we have the module `fetch` module, from this you can import `
+fetch_from(class_, obj_id)` as well as `is_fetchable(className, object_id)` 
+former fetches a record from the SQL database given its unique object_id 
+whereas the latter checks if it is fetchable (most likely to check if it exists.)
 
 ```python
 >>> fetch_from(Student, 2)
 Student(student_id=10, student_name='Albert Einstein')
 ```
 
-We have four helper methods, `fetch_range(class_, range_)` and
+We also have four helper methods, `fetch_range(class_, range_)` and
 `fetch_all(class_)` are very similar: the former fetches the records
 fetchable from the object id range provided by the user, whereas the
 latter fetches all records. Both return a tuple of `class_` objects.

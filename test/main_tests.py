@@ -1,5 +1,6 @@
 import unittest
-from datalite import datalite, fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
+from datalite import datalite
+from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
 from os import remove
