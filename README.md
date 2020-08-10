@@ -79,4 +79,4 @@ latter fetches all records. Both return a tuple of `class_` objects.
 
 The last helper method, `fetch_if(class_, condition)` fetches all
 the records of type `class_` that fit a certain condition. Here conditions
-must be written is SQL syntax.
+must be written is SQL syntax. Be careful about the string espacially.
