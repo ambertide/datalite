@@ -34,5 +34,5 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TESTING_KEY }}
         with:
-          coverageCommand: coverage run -m unittest test/main_tests.py
+          coverageCommand: coverage run -m unittest test/main_tests.py && coverage xml
           debug: true
