@@ -4,12 +4,15 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9d4ce56bfbd3b63649be/test_coverage)](https://codeclimate.com/github/ambertide/datalite/test_coverage)
 [![PyPI version shields.io](https://img.shields.io/pypi/v/datalite.svg)](https://pypi.python.org/pypi/datalite/)
 [![PyPI license](https://img.shields.io/pypi/l/datalite.svg)](https://pypi.python.org/pypi/datalite/)
+[![Documentation Status](https://readthedocs.org/projects/datalite/badge/?version=latest)](https://datalite.readthedocs.io/en/latest/?badge=latest)
 
 Datalite is a simple Python
 package that binds your dataclasses to a table in a sqlite3 database,
 using it is extremely simple, say that you have a dataclass definition,
 just add the decorator `@datalite(db_name="db.db")` to the top of the
 definition, and the dataclass will now be bound to the file `db.db`
+
+[Detailed API reference](https://datalite.readthedocs.io/en/latest/)
 
 ## Download and Install
 
