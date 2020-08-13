@@ -11,7 +11,23 @@ using it is extremely simple, say that you have a dataclass definition,
 just add the decorator `@datalite(db_name="db.db")` to the top of the
 definition, and the dataclass will now be bound to the file `db.db`
 
-For example:
+## Download and Install
+
+You can install `datalite` simply by
+
+```shell script
+pip install datalite
+```
+
+Or you can clone the repository and run
+
+```shell script
+python setup.py
+```
+
+Datalite has no dependencies! As it is built on Python 3.7+ standard library. Albeit, its tests require `unittest` library.
+
+## Datalite in Action
 
 ```python
 from dataclasses import dataclass
@@ -30,7 +46,9 @@ table name `student` and rows `student_id`, `student_name` with datatypes
 integer and text, respectively. The default value for `student_name` is
 `John Smith`.
 
-## Entry manipulation
+##Basic Usage
+
+### Entry manipulation
 
 After creating an object traditionally, given that you used the `datalite` decorator,
 the object has three new methods: `.create_entry()`, `.update_entry()`
@@ -82,3 +100,9 @@ the records of type `class_` that fit a certain condition. Here conditions
 must be written is SQL syntax. For easier, only one conditional checks, there
 is `fetch_equals(class_, field, value)` that checks the value of only one `field`
 and returns the object whose `field` equals the provided `value`.
+
+#### Pagination
+
+`datalite` also supports pagination on `fetch_if`, `fetch_all` and `fetch_where`,
+you can specify `page` number and `element_count` for each page (default 10), for
+these functions in order to get a subgroup of records.

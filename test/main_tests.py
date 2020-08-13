@@ -3,6 +3,7 @@ from datalite import datalite
 from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
+from math import floor
 from os import remove
 
 
@@ -73,7 +74,6 @@ class DatabaseMain(unittest.TestCase):
         self.assertEqual(len(objects), init_len)
 
 
-
 class DatabaseFetchCalls(unittest.TestCase):
     def setUp(self) -> None:
         self.objs = [FetchClass(1, 'a'), FetchClass(2, 'b'), FetchClass(3, 'b')]
@@ -106,6 +106,26 @@ class DatabaseFetchCalls(unittest.TestCase):
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]
 
+
+class DatabaseFetchPaginationCalls(unittest.TestCase):
+    def setUp(self) -> None:
+        self.objs = [FetchClass(i, f'{floor(i/10)}') for i in range(30)]
+        [obj.create_entry() for obj in self.objs]
+
+    def testFetchAllPagination(self):
+        t_objs = fetch_all(FetchClass, 1, 10)
+        self.assertEqual(tuple(self.objs[:10]), t_objs)
+
+    def testFetchWherePagination(self):
+        t_objs = fetch_where(FetchClass, 'str_', '0', 2, 5)
+        self.assertEqual(tuple(self.objs[5:10]), t_objs)
+
+    def testFetchIfPagination(self):
+        t_objs = fetch_if(FetchClass, 'str_ = "0"', 1, 5)
+        self.assertEqual(tuple(self.objs[:5]), t_objs)
+
+    def tearDown(self) -> None:
+        [obj.remove_entry() for obj in self.objs]
 
 if __name__ == '__main__':
     unittest.main()
