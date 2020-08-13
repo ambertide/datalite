@@ -1,7 +1,13 @@
+"""
+Defines the Datalite decorator that can be used to convert a dataclass to
+a class bound to a sqlite3 database.
+"""
+
 from typing import Dict, Optional, List, Callable
 from dataclasses import Field, asdict
 import sqlite3 as sql
 from .commons import _convert_sql_format, _convert_type
+
 
 def _get_default(default_object: object, type_overload: Dict[Optional[type], str]) -> str:
     """
@@ -90,8 +96,14 @@ def _remove_entry(self) -> None:
     remove_from(self.__class__, getattr(self, 'obj_id'))
 
 
-def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None,
-             *args, **kwargs) -> Callable:
+def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = None) -> Callable:
+    """Bind a dataclass to a sqlite3 database. This adds new methods to the class, such as
+    `create_entry()`, `remove_entry()` and `update_entry()`.
+
+    :param db_path: Path of the database to be binded.
+    :param type_overload: Type overload dictionary.
+    :return: The new dataclass.
+    """
     def decorator(dataclass_: type, *args_i, **kwargs_i):
         type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
                                                  str: "TEXT", bytes: "BLOB"}
