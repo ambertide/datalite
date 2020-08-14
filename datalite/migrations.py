@@ -132,6 +132,9 @@ def _migrate_records(class_: type, database_name: str, data,
     new_records = _modify_records(data, col_to_del, col_to_add, flow)
     for record in new_records:
         del record['obj_id']
+        keys_to_delete = [key for key in record if record[key] is None]
+        for key in keys_to_delete:
+            del record[key]
         class_(**record).create_entry()
 
 

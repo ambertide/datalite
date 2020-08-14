@@ -40,6 +40,7 @@ class Migrate1:
 @dataclass
 class Migrate2:
     cardinal: int
+    str_: str = "default"
 
 
 def getValFromDB(obj_id = 1):
@@ -153,6 +154,7 @@ class DatabaseMigration(unittest.TestCase):
         basic_migrate(Migrate1, {'ordinal': 'cardinal'})
         t_objs = fetch_all(Migrate1)
         self.assertEqual([obj.ordinal for obj in self.objs], [obj.cardinal for obj in t_objs])
+        self.assertEqual(["default" for _ in range(10)], [obj.str_ for obj in t_objs])
 
     def tearDown(self) -> None:
         t_objs = fetch_all(Migrate1)
