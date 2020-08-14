@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="datalite" href="modules.html" /> 
+    <link rel="prev" title="Welcome to Datalite’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,12 +83,10 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">datalite</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">datalite package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#datalite-module">datalite Module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-datalite.fetch">datalite.fetch module</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">datalite package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#datalite-module">datalite Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-datalite.fetch">datalite.fetch module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-datalite.migrations">datalite.migrations module</a></li>
 </ul>
 </li>
 </ul>
@@ -136,8 +134,6 @@
   <ul class="wy-breadcrumbs">
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="modules.html">datalite</a> &raquo;</li>
         
       <li>datalite package</li>
     
@@ -196,10 +192,10 @@
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>All the records of type <a href="#id1"><span class="problematic" id="id2">class_</span></a> in</p>
+<dd class="field-even"><p>All the records of type <a href="#id1"><span class="problematic" id="id2">class_</span></a> in
+the bound database as a tuple.</p>
 </dd>
 </dl>
-<p>the bound database as a tuple.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -252,10 +248,10 @@ provided they fit the given condition</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A tuple of records that fit the given condition</p>
+<dd class="field-even"><p>A tuple of records that fit the given condition
+of given type <a href="#id9"><span class="problematic" id="id10">class_</span></a>.</p>
 </dd>
 </dl>
-<p>of given type <a href="#id9"><span class="problematic" id="id10">class_</span></a>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -270,10 +266,10 @@ provided they fit the given condition</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A tuple of <a href="#id11"><span class="problematic" id="id12">class_</span></a> type objects whose values</p>
+<dd class="field-even"><p>A tuple of <a href="#id11"><span class="problematic" id="id12">class_</span></a> type objects whose values
+come from the <a href="#id13"><span class="problematic" id="id14">class_</span></a>’ bound database.</p>
 </dd>
 </dl>
-<p>come from the <a href="#id13"><span class="problematic" id="id14">class_</span></a>’ bound database.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -317,6 +313,33 @@ given value.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-datalite.migrations">
+<span id="datalite-migrations-module"></span><h2>datalite.migrations module<a class="headerlink" href="#module-datalite.migrations" title="Permalink to this headline">¶</a></h2>
+<p>Migrations module deals with migrating data when the object
+definitions change. This functions deal with Schema Migrations.</p>
+<dl class="py function">
+<dt id="datalite.migrations.basic_migrate">
+<code class="sig-prename descclassname">datalite.migrations.</code><code class="sig-name descname">basic_migrate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">class_</span><span class="p">:</span> <span class="n">type</span></em>, <em class="sig-param"><span class="n">column_transfer</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#datalite.migrations.basic_migrate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a class, compare its previous table,
+delete the fields that no longer exist,
+create new columns for new fields. If the
+column_flow parameter is given, migrate elements
+from previous column to the new ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>class</strong> – Datalite class to migrate.</p></li>
+<li><p><strong>column_transfer</strong> – A dictionary showing which
+columns will be copied to new ones.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -328,7 +351,7 @@ given value.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="modules.html" class="btn btn-neutral float-left" title="datalite" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Datalite’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -6,6 +6,8 @@ from dataclasses import dataclass, asdict
 from math import floor
 from os import remove
 
+from datalite.migrations import basic_migrate, _drop_table
+
 
 @datalite(db_path='test.db')
 @dataclass
@@ -27,6 +29,17 @@ class FetchClass:
 
     def __eq__(self, other):
         return asdict(self) == asdict(other)
+
+@datalite(db_path='test.db')
+@dataclass
+class Migrate1:
+    ordinal: int
+
+
+@datalite(db_path='test.db')
+@dataclass
+class Migrate2:
+    cardinal: int
 
 
 def getValFromDB(obj_id = 1):
@@ -126,6 +139,26 @@ class DatabaseFetchPaginationCalls(unittest.TestCase):
 
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]
+
+
+class DatabaseMigration(unittest.TestCase):
+    def setUp(self) -> None:
+        self.objs = [Migrate1(i) for i in range(10)]
+        [obj.create_entry() for obj in self.objs]
+
+    def testBasicMigrate(self):
+        global Migrate1, Migrate2
+        Migrate1 = Migrate2
+        Migrate1.__name__ = 'Migrate1'
+        basic_migrate(Migrate1, {'ordinal': 'cardinal'})
+        t_objs = fetch_all(Migrate1)
+        self.assertEqual([obj.ordinal for obj in self.objs], [obj.cardinal for obj in t_objs])
+
+    def tearDown(self) -> None:
+        t_objs = fetch_all(Migrate1)
+        [obj.remove_entry() for obj in t_objs]
+        _drop_table('test.db', 'migrate1')
+
 
 if __name__ == '__main__':
     unittest.main()

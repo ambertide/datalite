@@ -6,40 +6,7 @@ a class bound to a sqlite3 database.
 from typing import Dict, Optional, List, Callable
 from dataclasses import Field, asdict
 import sqlite3 as sql
-from .commons import _convert_sql_format, _convert_type
-
-
-def _get_default(default_object: object, type_overload: Dict[Optional[type], str]) -> str:
-    """
-    Check if the field's default object is filled,
-    if filled return the string to be put in the,
-    database.
-    :param default_object: The default field of the field.
-    :param type_overload: Type overload table.
-    :return: The string to be put on the table statement,
-    empty string if no string is necessary.
-    """
-    if type(default_object) in type_overload:
-        return f' DEFAULT {_convert_sql_format(default_object)}'
-    return ""
-
-
-def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional[type], str]) -> None:
-    """
-    Create the table for a specific dataclass given
-    :param class_: A dataclass.
-    :param cursor: Current cursor instance.
-    :param type_overload: Overload the Python -> SQLDatatype table
-    with a custom table, this is that custom table.
-    :return: None.
-    """
-    fields: List[Field] = [class_.__dataclass_fields__[key] for
-                           key in class_.__dataclass_fields__.keys()]
-    fields.sort(key=lambda field: field.name)  # Since dictionaries *may* be unsorted.
-    sql_fields = ', '.join(f"{field.name} {_convert_type(field.type, type_overload)}"
-                           f"{_get_default(field.default, type_overload)}" for field in fields)
-    sql_fields = "obj_id INTEGER PRIMARY KEY AUTOINCREMENT, " + sql_fields
-    cursor.execute(f"CREATE TABLE IF NOT EXISTS {class_.__name__.lower()} ({sql_fields});")
+from .commons import _convert_sql_format, _convert_type, _create_table, type_table
 
 
 def _create_entry(self) -> None:
@@ -105,14 +72,14 @@ def datalite(db_path: str, type_overload: Optional[Dict[Optional[type], str]] = 
     :return: The new dataclass.
     """
     def decorator(dataclass_: type, *args_i, **kwargs_i):
-        type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
-                                                 str: "TEXT", bytes: "BLOB"}
+        types_table = type_table.copy()
         if type_overload is not None:
-            type_table.update(type_overload)
+            types_table.update(type_overload)
         with sql.connect(db_path) as con:
             cur: sql.Cursor = con.cursor()
-            _create_table(dataclass_, cur, type_table)
+            _create_table(dataclass_, cur, types_table)
         setattr(dataclass_, 'db_path', db_path)  # We add the path of the database to class itself.
+        setattr(dataclass_, 'types_table', types_table)  # We add the type table for migration.
         dataclass_.create_entry = _create_entry
         dataclass_.remove_entry = _remove_entry
         dataclass_.update_entry = _update_entry

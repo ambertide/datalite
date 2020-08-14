@@ -1,6 +1,6 @@
 import sqlite3 as sql
 from typing import List, Tuple, Any
-from .commons import _convert_sql_format
+from .commons import _convert_sql_format, _get_table_cols
 
 
 def _insert_pagination(query: str, page: int, element_count: int) -> str:
@@ -33,18 +33,6 @@ def is_fetchable(class_: type, obj_id: int) -> bool:
         except sql.OperationalError:
             raise KeyError(f"Table {class_.__name__.lower()} does not exist.")
     return bool(cur.fetchall())
-
-
-def _get_table_cols(cur: sql.Cursor, table_name: str) -> List[str]:
-    """
-    Get the column data of a table.
-
-    :param cur: Cursor in database.
-    :param table_name: Name of the table.
-    :return: the information about columns.
-    """
-    cur.execute(f"PRAGMA table_info({table_name});")
-    return [row_info[1] for row_info in cur.fetchall()][1:]
 
 
 def fetch_equals(class_: type, field: str, value: Any, ) -> Any:
@@ -112,7 +100,7 @@ def fetch_if(class_: type, condition: str, page: int = 0, element_count: int = 1
     :param page: Which page to retrieve, default all. (0 means closed).
     :param element_count: Element count in each page.
     :return: A tuple of records that fit the given condition
-    of given type class_.
+        of given type class_.
     """
     table_name = class_.__name__.lower()
     with sql.connect(getattr(class_, 'db_path')) as con:
@@ -146,7 +134,7 @@ def fetch_range(class_: type, range_: range) -> tuple:
     :param class_: Class of the records.
     :param range_: Range of the object ids.
     :return: A tuple of class_ type objects whose values
-    come from the class_' bound database.
+        come from the class_' bound database.
     """
     return tuple(fetch_from(class_, obj_id) for obj_id in range_ if is_fetchable(class_, obj_id))
 
@@ -159,7 +147,7 @@ def fetch_all(class_: type, page: int = 0, element_count: int = 10) -> tuple:
     :param page: Which page to retrieve, default all. (0 means closed).
     :param element_count: Element count in each page.
     :return: All the records of type class_ in
-    the bound database as a tuple.
+        the bound database as a tuple.
     """
     try:
         db_path = getattr(class_, 'db_path')

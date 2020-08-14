@@ -14,4 +14,10 @@ datalite.fetch module
    :undoc-members:
    :show-inheritance:
 
+datalite.migrations module
+----------------------------
 
+.. automodule:: datalite.migrations
+   :members:
+   :undoc-members:
+   :show-inheritance:

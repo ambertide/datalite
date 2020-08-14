@@ -1,4 +1,6 @@
-from typing import Any, Optional, Dict
+from dataclasses import Field
+from typing import Any, Optional, Dict, List
+import sqlite3 as sql
 
 
 def _convert_type(type_: Optional[type], type_overload: Dict[Optional[type], str]) -> str:
@@ -34,3 +36,51 @@ def _convert_sql_format(value: Any) -> str:
         return '"' + str(value).replace("b'", "")[:-1] + '"'
     else:
         return str(value)
+
+
+def _get_table_cols(cur: sql.Cursor, table_name: str) -> List[str]:
+    """
+    Get the column data of a table.
+
+    :param cur: Cursor in database.
+    :param table_name: Name of the table.
+    :return: the information about columns.
+    """
+    cur.execute(f"PRAGMA table_info({table_name});")
+    return [row_info[1] for row_info in cur.fetchall()][1:]
+
+
+def _get_default(default_object: object, type_overload: Dict[Optional[type], str]) -> str:
+    """
+    Check if the field's default object is filled,
+    if filled return the string to be put in the,
+    database.
+    :param default_object: The default field of the field.
+    :param type_overload: Type overload table.
+    :return: The string to be put on the table statement,
+    empty string if no string is necessary.
+    """
+    if type(default_object) in type_overload:
+        return f' DEFAULT {_convert_sql_format(default_object)}'
+    return ""
+
+
+def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional[type], str]) -> None:
+    """
+    Create the table for a specific dataclass given
+    :param class_: A dataclass.
+    :param cursor: Current cursor instance.
+    :param type_overload: Overload the Python -> SQLDatatype table
+    with a custom table, this is that custom table.
+    :return: None.
+    """
+    fields: List[Field] = [class_.__dataclass_fields__[key] for
+                           key in class_.__dataclass_fields__.keys()]
+    fields.sort(key=lambda field: field.name)  # Since dictionaries *may* be unsorted.
+    sql_fields = ', '.join(f"{field.name} {_convert_type(field.type, type_overload)}"
+                           f"{_get_default(field.default, type_overload)}" for field in fields)
+    sql_fields = "obj_id INTEGER PRIMARY KEY AUTOINCREMENT, " + sql_fields
+    cursor.execute(f"CREATE TABLE IF NOT EXISTS {class_.__name__.lower()} ({sql_fields});")
+
+type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
+                                                 str: "TEXT", bytes: "BLOB"}
