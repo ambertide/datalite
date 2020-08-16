@@ -34,6 +34,7 @@ class FetchClass:
 @dataclass
 class Migrate1:
     ordinal: int
+    conventional: str
 
 
 @datalite(db_path='test.db')
@@ -144,7 +145,7 @@ class DatabaseFetchPaginationCalls(unittest.TestCase):
 
 class DatabaseMigration(unittest.TestCase):
     def setUp(self) -> None:
-        self.objs = [Migrate1(i) for i in range(10)]
+        self.objs = [Migrate1(i, "a") for i in range(10)]
         [obj.create_entry() for obj in self.objs]
 
     def testBasicMigrate(self):

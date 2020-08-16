@@ -102,6 +102,8 @@ def _modify_records(data, col_to_del: Tuple[str], col_to_add: Tuple[str],
         for key in record.keys():
             if key in col_to_del and key in flow:
                 record_mod[flow[key]] = record[key]
+            elif key in col_to_del:
+                pass
             else:
                 record_mod[key] = record[key]
         for key_to_add in col_to_add:
@@ -144,7 +146,8 @@ def basic_migrate(class_: type, column_transfer: dict = None) -> None:
     delete the fields that no longer exist,
     create new columns for new fields. If the
     column_flow parameter is given, migrate elements
-    from previous column to the new ones.
+    from previous column to the new ones. It should be
+    noted that, the obj_ids do not persist.
 
     :param class_: Datalite class to migrate.
     :param column_transfer: A dictionary showing which
