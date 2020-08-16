@@ -3,6 +3,7 @@ datalite/__pycache__/*
 *.pyc
 datalite/*.db
 *.db
+docs/_build/*
 build/*
 datalite.egg-info/*
 dist/*
