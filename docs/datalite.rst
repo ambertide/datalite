@@ -1,4 +1,4 @@
-datalite package
+API Reference
 ================
 
 datalite Module
