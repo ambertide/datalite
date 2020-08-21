@@ -6,6 +6,14 @@ datalite Module
 
 .. autodecorator:: datalite.datalite
 
+datalite.constraints module
+----------------------------------
+
+.. automodule:: datalite.constraints
+    :members:
+    :undoc-members:
+    :show-inheritence:
+
 datalite.fetch module
 ---------------------
 

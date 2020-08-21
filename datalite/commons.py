@@ -1,6 +1,12 @@
 from dataclasses import Field
 from typing import Any, Optional, Dict, List
+from .constraints import Unique
 import sqlite3 as sql
+
+
+type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
+                                         str: "TEXT", bytes: "BLOB"}
+type_table.update({Unique[key]: f"{value} NOT NULL UNIQUE" for key, value in type_table.items()})
 
 
 def _convert_type(type_: Optional[type], type_overload: Dict[Optional[type], str]) -> str:
@@ -30,7 +36,9 @@ def _convert_sql_format(value: Any) -> str:
     >>> _convert_sql_format("John Smith")
     '"John Smith"'
     """
-    if isinstance(value, str):
+    if value is None:
+        return "NULL"
+    elif isinstance(value, str):
         return f'"{value}"'
     elif isinstance(value, bytes):
         return '"' + str(value).replace("b'", "")[:-1] + '"'
@@ -82,5 +90,5 @@ def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional
     sql_fields = "obj_id INTEGER PRIMARY KEY AUTOINCREMENT, " + sql_fields
     cursor.execute(f"CREATE TABLE IF NOT EXISTS {class_.__name__.lower()} ({sql_fields});")
 
-type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
-                                                 str: "TEXT", bytes: "BLOB"}
+
+

@@ -1,5 +1,9 @@
 import unittest
+from typing import Final
+
+from constraints import ConstraintFailedError
 from datalite import datalite
+from datalite.constraints import Unique
 from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
@@ -40,8 +44,14 @@ class Migrate1:
 @datalite(db_path='test.db')
 @dataclass
 class Migrate2:
-    cardinal: int
+    cardinal: Unique[int] = 1
     str_: str = "default"
+
+
+@datalite(db_path='test.db')
+@dataclass
+class ConstraintedClass:
+    unique_str: Unique[str]
 
 
 def getValFromDB(obj_id = 1):
@@ -161,6 +171,26 @@ class DatabaseMigration(unittest.TestCase):
         t_objs = fetch_all(Migrate1)
         [obj.remove_entry() for obj in t_objs]
         _drop_table('test.db', 'migrate1')
+
+
+def helperFunc():
+    obj = ConstraintedClass("This string is supposed to be unique.")
+    obj.create_entry()
+
+
+class DatabaseConstraints(unittest.TestCase):
+    def setUp(self) -> None:
+        self.obj = ConstraintedClass("This string is supposed to be unique.")
+        self.obj.create_entry()
+
+    def testUniquness(self):
+        self.assertRaises(ConstraintFailedError, helperFunc)
+
+    def testNullness(self):
+        self.assertRaises(ConstraintFailedError, lambda : ConstraintedClass(None).create_entry())
+
+    def tearDown(self) -> None:
+        self.obj.remove_entry()
 
 
 if __name__ == '__main__':

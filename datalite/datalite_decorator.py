@@ -2,10 +2,12 @@
 Defines the Datalite decorator that can be used to convert a dataclass to
 a class bound to a sqlite3 database.
 """
-
+from sqlite3.dbapi2 import IntegrityError
 from typing import Dict, Optional, List, Callable
 from dataclasses import Field, asdict
 import sqlite3 as sql
+
+from constraints import ConstraintFailedError
 from .commons import _convert_sql_format, _convert_type, _create_table, type_table
 
 
@@ -22,11 +24,14 @@ def _create_entry(self) -> None:
         table_name: str = self.__class__.__name__.lower()
         kv_pairs = [item for item in asdict(self).items()]
         kv_pairs.sort(key=lambda item: item[0])  # Sort by the name of the fields.
-        cur.execute(f"INSERT INTO {table_name}("
-                    f"{', '.join(item[0] for item in kv_pairs)})"
-                    f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
-        self.__setattr__("obj_id", cur.lastrowid)
-        con.commit()
+        try:
+            cur.execute(f"INSERT INTO {table_name}("
+                        f"{', '.join(item[0] for item in kv_pairs)})"
+                        f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
+            self.__setattr__("obj_id", cur.lastrowid)
+            con.commit()
+        except IntegrityError:
+            raise ConstraintFailedError("A constraint has failed.")
 
 
 def _update_entry(self) -> None:

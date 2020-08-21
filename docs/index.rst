@@ -19,6 +19,7 @@ Documentation
 
    installation
    decorator
+   constraints
    fetch
    migration
    datalite
