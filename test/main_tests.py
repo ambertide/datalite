@@ -1,7 +1,6 @@
 import unittest
-from constraints import ConstraintFailedError
 from datalite import datalite
-from datalite.constraints import Unique
+from datalite.constraints import Unique, ConstraintFailedError
 from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
