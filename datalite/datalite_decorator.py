@@ -3,11 +3,11 @@ Defines the Datalite decorator that can be used to convert a dataclass to
 a class bound to a sqlite3 database.
 """
 from sqlite3.dbapi2 import IntegrityError
-from typing import Dict, Optional, List, Callable
-from dataclasses import Field, asdict
+from typing import Dict, Optional, Callable
+from dataclasses import asdict
 import sqlite3 as sql
 
-from constraints import ConstraintFailedError
+from .constraints import ConstraintFailedError
 from .commons import _convert_sql_format, _convert_type, _create_table, type_table
 
 
