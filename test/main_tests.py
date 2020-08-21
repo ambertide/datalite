@@ -1,6 +1,4 @@
 import unittest
-from typing import Final
-
 from constraints import ConstraintFailedError
 from datalite import datalite
 from datalite.constraints import Unique
