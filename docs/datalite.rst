@@ -10,9 +10,9 @@ datalite.constraints module
 ----------------------------------
 
 .. automodule:: datalite.constraints
-    :members:
-    :undoc-members:
-    :show-inheritence:
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 datalite.fetch module
 ---------------------
@@ -26,9 +26,9 @@ datalite.mass_actions module
 ------------------------------
 
 .. automodule:: datalite.mass_actions
-    :members:
-    :undoc-members:
-    :show-inheritence:
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 datalite.migrations module
 ----------------------------
