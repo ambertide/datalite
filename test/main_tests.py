@@ -200,7 +200,7 @@ class DatabaseMassInsert(unittest.TestCase):
         self.objs = [MassCommit('cat') for _ in range(30)]
 
     def testMassCreate(self):
-        create_many_entries(self.objs)
+        create_many_entries(self.objs, protect_memory=False)
 
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]

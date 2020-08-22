@@ -28,11 +28,13 @@ def is_homogeneous(objects: Union[List[T], Tuple[T]]) -> bool:
     return all([isinstance(obj, class_) for obj in objects])
 
 
-def create_many_entries(objects: Union[List[T], Tuple[T]]) -> None:
+def create_many_entries(objects: Union[List[T], Tuple[T]], protect_memory: bool = True) -> None:
     """
     Insert many records corresponding to objects
         in a tuple or a list.
 
+    :param protect_memory: If False, memory protections are turned off,
+        makes it faster.
     :param objects: A tuple or a list of objects decorated
         with datalite.
     :return: None.
@@ -50,11 +52,14 @@ def create_many_entries(objects: Union[List[T], Tuple[T]]) -> None:
     with sql.connect(getattr(objects[0], "db_path")) as con:
         cur: sql.Cursor = con.cursor()
         try:
+            if not protect_memory:
+                cur.execute("PRAGMA synchronous = OFF")
+                cur.execute("PRAGMA journal_mode = MEMORY")
             cur.execute(f"SELECT obj_id FROM {table_name} ORDER BY obj_id DESC LIMIT 1")
             index_tuple = cur.fetchone()
             if index_tuple:
                 first_index = index_tuple[0]
-            cur.executescript('\n'.join(sql_queries))
+            cur.executescript("BEGIN TRANSACTION;\n" + '\n'.join(sql_queries) + '\nEND TRANSACTION;')
         except sql.IntegrityError:
             raise ConstraintFailedError
         con.commit()
