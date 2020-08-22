@@ -2,11 +2,10 @@ import unittest
 from datalite import datalite
 from datalite.constraints import Unique, ConstraintFailedError
 from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
+from datalite.mass_actions import create_many_entries
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
 from math import floor
-from os import remove
-
 from datalite.migrations import basic_migrate, _drop_table
 
 
@@ -49,6 +48,12 @@ class Migrate2:
 @dataclass
 class ConstraintedClass:
     unique_str: Unique[str]
+
+
+@datalite(db_path='test.db')
+@dataclass
+class MassCommit:
+    str_: str
 
 
 def getValFromDB(obj_id = 1):
@@ -188,6 +193,17 @@ class DatabaseConstraints(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.obj.remove_entry()
+
+
+class DatabaseMassInsert(unittest.TestCase):
+    def setUp(self) -> None:
+        self.objs = [MassCommit('cat') for _ in range(30)]
+
+    def testMassCreate(self):
+        create_many_entries(self.objs)
+
+    def tearDown(self) -> None:
+        [obj.remove_entry() for obj in self.objs]
 
 
 if __name__ == '__main__':

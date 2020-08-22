@@ -22,6 +22,14 @@ datalite.fetch module
    :undoc-members:
    :show-inheritance:
 
+datalite.mass_actions module
+------------------------------
+
+.. automodule:: datalite.mass_actions
+    :members:
+    :undoc-members:
+    :show-inheritence:
+
 datalite.migrations module
 ----------------------------
 
