@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="datalite", # Replace with your own username
-    version="0.5.10",
+    version="0.6.0",
     author="Ege Ozkan",
     author_email="egeemirozkan24@gmail.com",
     description="A small package that binds dataclasses to an sqlite database",
