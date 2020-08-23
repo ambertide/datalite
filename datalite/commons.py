@@ -73,7 +73,7 @@ def _get_default(default_object: object, type_overload: Dict[Optional[type], str
     return ""
 
 
-def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional[type], str]) -> None:
+def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional[type], str] = type_table) -> None:
     """
     Create the table for a specific dataclass given
     :param class_: A dataclass.
@@ -89,6 +89,3 @@ def _create_table(class_: type, cursor: sql.Cursor, type_overload: Dict[Optional
                            f"{_get_default(field.default, type_overload)}" for field in fields)
     sql_fields = "obj_id INTEGER PRIMARY KEY AUTOINCREMENT, " + sql_fields
     cursor.execute(f"CREATE TABLE IF NOT EXISTS {class_.__name__.lower()} ({sql_fields});")
-
-
-

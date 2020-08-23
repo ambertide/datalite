@@ -2,7 +2,7 @@ import unittest
 from datalite import datalite
 from datalite.constraints import Unique, ConstraintFailedError
 from datalite.fetch import fetch_if, fetch_all, fetch_range, fetch_from, fetch_equals, fetch_where
-from datalite.mass_actions import create_many_entries
+from datalite.mass_actions import create_many, copy_many
 from sqlite3 import connect
 from dataclasses import dataclass, asdict
 from math import floor
@@ -197,10 +197,18 @@ class DatabaseConstraints(unittest.TestCase):
 
 class DatabaseMassInsert(unittest.TestCase):
     def setUp(self) -> None:
-        self.objs = [MassCommit('cat') for _ in range(30)]
+        self.objs = [MassCommit(f'cat + {i}') for i in range(30)]
 
     def testMassCreate(self):
-        create_many_entries(self.objs, protect_memory=False)
+        create_many(self.objs, protect_memory=False)
+        _objs = fetch_all(MassCommit)
+        self.assertEqual(_objs, tuple(self.objs))
+
+    def testMassCopy(self):
+        copy_many(self.objs, 'other.db', False)
+        setattr(MassCommit, 'db_path', 'other.db')
+        tup = fetch_all(MassCommit)
+        self.assertEqual(tup, tuple(self.objs))
 
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]
