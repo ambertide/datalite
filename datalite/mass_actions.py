@@ -67,7 +67,6 @@ def _mass_insert(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory
     table_name = objects[0].__class__.__name__.lower()
     for obj in objects:
         kv_pairs = asdict(obj).items()
-        print(kv_pairs)
         sql_queries.append(f"INSERT INTO {table_name}(" +
                            f"{', '.join(item[0] for item in kv_pairs)})" +
                            f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
