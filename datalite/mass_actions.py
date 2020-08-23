@@ -1,7 +1,7 @@
 """
 This module includes functions to insert multiple records
-    to a bound database at one time, with one time open and closing
-    of the database file.
+to a bound database at one time, with one time open and closing
+of the database file.
 """
 from typing import TypeVar, Union, List, Tuple
 from dataclasses import asdict
@@ -15,7 +15,7 @@ T = TypeVar('T')
 
 class HeterogeneousCollectionError(Exception):
     """
-    :raises if the passed collection is not homogeneous.
+    :raise : if the passed collection is not homogeneous.
         ie: If a List or Tuple has elements of multiple
         types.
     """
@@ -25,7 +25,7 @@ class HeterogeneousCollectionError(Exception):
 def _check_homogeneity(objects: Union[List[T], Tuple[T]]) -> None:
     """
     Check if all of the members a Tuple or a List
-        is of the same type.
+    is of the same type.
 
     :param objects: Tuple or list to check.
     :return: If all of the members of the same type.
@@ -89,7 +89,7 @@ def _mass_insert(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory
 def create_many(objects: Union[List[T], Tuple[T]], protect_memory: bool = True) -> None:
     """
     Insert many records corresponding to objects
-        in a tuple or a list.
+    in a tuple or a list.
 
     :param protect_memory: If False, memory protections are turned off,
         makes it faster.
@@ -106,8 +106,8 @@ def create_many(objects: Union[List[T], Tuple[T]], protect_memory: bool = True) 
 def copy_many(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory: bool = True) -> None:
     """
     Copy many records to another database, from
-        their original database to new database,
-        do not delete old records.
+    their original database to new database, do
+    not delete old records.
 
     :param objects: Objects to copy.
     :param db_name: Name of the new database.
