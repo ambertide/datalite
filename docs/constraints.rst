@@ -52,7 +52,9 @@ exception.
 Uniqueness constraint is declared thusly:
 
 .. code-block:: python
-
+    
+    from datalite.constraints import Unique
+    
     @datalite("db.db")
     @dataclass
     class Student:
