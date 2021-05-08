@@ -7,3 +7,4 @@ docs/_build/*
 build/*
 datalite.egg-info/*
 dist/*
+venv/*
