@@ -199,16 +199,23 @@ class DatabaseMassInsert(unittest.TestCase):
     def setUp(self) -> None:
         self.objs = [MassCommit(f'cat + {i}') for i in range(30)]
 
+
     def testMassCreate(self):
+        with connect('other.db') as con:
+            cur = con.cursor()
+            cur.execute(f'CREATE TABLE IF NOT EXISTS MASSCOMMIT (obj_id, str_)')
+
+        start_tup = fetch_all(MassCommit)
         create_many(self.objs, protect_memory=False)
         _objs = fetch_all(MassCommit)
-        self.assertEqual(_objs, tuple(self.objs))
+        self.assertEqual(_objs, start_tup + tuple(self.objs))
 
     def testMassCopy(self):
-        copy_many(self.objs, 'other.db', False)
         setattr(MassCommit, 'db_path', 'other.db')
+        start_tup = fetch_all(MassCommit)
+        copy_many(self.objs, 'other.db', False)
         tup = fetch_all(MassCommit)
-        self.assertEqual(tup, tuple(self.objs))
+        self.assertEqual(tup, start_tup + tuple(self.objs))
 
     def tearDown(self) -> None:
         [obj.remove_entry() for obj in self.objs]

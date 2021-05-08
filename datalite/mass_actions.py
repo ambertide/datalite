@@ -65,8 +65,10 @@ def _mass_insert(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory
     sql_queries = []
     first_index: int = 0
     table_name = objects[0].__class__.__name__.lower()
-    for obj in objects:
+
+    for i, obj in enumerate(objects):
         kv_pairs = asdict(obj).items()
+        setattr(obj, "obj_id", first_index + i + 1)
         sql_queries.append(f"INSERT INTO {table_name}(" +
                            f"{', '.join(item[0] for item in kv_pairs)})" +
                            f" VALUES ({', '.join(_convert_sql_format(item[1]) for item in kv_pairs)});")
@@ -81,8 +83,6 @@ def _mass_insert(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory
             cur.executescript("BEGIN TRANSACTION;\n" + '\n'.join(sql_queries) + '\nEND TRANSACTION;')
         except sql.IntegrityError:
             raise ConstraintFailedError
-    for i, obj in enumerate(objects):
-        setattr(obj, "obj_id", first_index + i + 1)
 
 
 def create_many(objects: Union[List[T], Tuple[T]], protect_memory: bool = True) -> None:
