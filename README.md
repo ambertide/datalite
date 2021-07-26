@@ -6,6 +6,8 @@
 [![PyPI license](https://img.shields.io/pypi/l/datalite.svg)](https://pypi.python.org/pypi/datalite/)
 [![Documentation Status](https://readthedocs.org/projects/datalite/badge/?version=latest)](https://datalite.readthedocs.io/en/latest/?badge=latest)
 
+It should be noted that Datalite is not suitable for secure web applications, it really is only suitable for cases when you can trust user input.
+
 Datalite is a simple Python
 package that binds your dataclasses to a table in a sqlite3 database,
 using it is extremely simple, say that you have a dataclass definition,
