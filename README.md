@@ -51,7 +51,7 @@ table name `student` and rows `student_id`, `student_name` with datatypes
 integer and text, respectively. The default value for `student_name` is
 `John Smith`.
 
-##Basic Usage
+## Basic Usage
 
 ### Entry manipulation
 
