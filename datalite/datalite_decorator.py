@@ -28,7 +28,7 @@ def _create_entry(self) -> None:
             cur.execute(f"INSERT INTO {table_name}("
                         f"{', '.join(item[0] for item in kv_pairs)})"
                         f" VALUES ({', '.join('?' for item in kv_pairs)})",
-                        [_convert_sql_format(item[1]) for item in kv_pairs])
+                        [item[1] for item in kv_pairs])
             self.__setattr__("obj_id", cur.lastrowid)
             con.commit()
         except IntegrityError:
@@ -47,9 +47,9 @@ def _update_entry(self) -> None:
         kv_pairs = [item for item in asdict(self).items()]
         kv_pairs.sort(key=lambda item: item[0])
         query = f"UPDATE {table_name} " + \
-                f"SET {', '.join(item[0] + ' = ' + _convert_sql_format(item[1]) for item in kv_pairs)} " + \
+                f"SET {', '.join(item[0] + ' = ?' for item in kv_pairs)} " + \
                 f"WHERE obj_id = {getattr(self, 'obj_id')};"
-        cur.execute(query)
+        cur.execute(query, [item[1] for item in kv_pairs])
         con.commit()
 
 
