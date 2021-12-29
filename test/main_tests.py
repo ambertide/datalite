@@ -64,9 +64,6 @@ def getValFromDB(obj_id = 1):
         fields.sort()
         repr = dict(zip(fields, cur.fetchall()[0][1:]))
         field_types = {key: value.type for key, value in TestClass.__dataclass_fields__.items()}
-        for key in fields:
-            if field_types[key] == bytes:
-                repr[key] = bytes(repr[key], encoding='utf-8')
         test_object = TestClass(**repr)
     return test_object
 
