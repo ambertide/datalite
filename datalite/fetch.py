@@ -29,7 +29,7 @@ def is_fetchable(class_: type, obj_id: int) -> bool:
     with sql.connect(getattr(class_, 'db_path')) as con:
         cur: sql.Cursor = con.cursor()
         try:
-            cur.execute(f"SELECT 1 FROM {class_.__name__.lower()} WHERE obj_id = {obj_id};")
+            cur.execute(f"SELECT 1 FROM {class_.__name__.lower()} WHERE obj_id = ?;", (obj_id, ))
         except sql.OperationalError:
             raise KeyError(f"Table {class_.__name__.lower()} does not exist.")
     return bool(cur.fetchall())
@@ -47,7 +47,7 @@ def fetch_equals(class_: type, field: str, value: Any, ) -> Any:
     table_name = class_.__name__.lower()
     with sql.connect(getattr(class_, 'db_path')) as con:
         cur: sql.Cursor = con.cursor()
-        cur.execute(f"SELECT * FROM {table_name} WHERE {field} = {_convert_sql_format(value)};")
+        cur.execute(f"SELECT * FROM {table_name} WHERE {field} = ?;", (value, ))
         obj_id, *field_values = list(cur.fetchone())
         field_names: List[str] = _get_table_cols(cur, class_.__name__.lower())
     kwargs = dict(zip(field_names, field_values))

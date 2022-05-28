@@ -56,7 +56,7 @@ def _update_entry(self) -> None:
 def remove_from(class_: type, obj_id: int):
     with sql.connect(getattr(class_, "db_path")) as con:
         cur: sql.Cursor = con.cursor()
-        cur.execute(f"DELETE FROM {class_.__name__.lower()} WHERE obj_id = {obj_id}")
+        cur.execute(f"DELETE FROM {class_.__name__.lower()} WHERE obj_id = ?", (obj_id, ))
         con.commit()
 
 

@@ -26,8 +26,7 @@ def _get_db_table(class_: type) -> Tuple[str, str]:
         raise FileNotFoundError(f"{database_name} does not exist")
     with sql.connect(database_name) as con:
         cur: sql.Cursor = con.cursor()
-        cur.execute(f"SELECT count(*) FROM sqlite_master "
-                    f"WHERE type='table' AND name='{table_name}';")
+        cur.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name=?;", (table_name, ))
         count: int = int(cur.fetchone()[0])
     if not count:
         raise FileExistsError(f"Table, {table_name}, already exists.")

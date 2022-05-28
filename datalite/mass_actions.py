@@ -83,6 +83,7 @@ def _mass_insert(objects: Union[List[T], Tuple[T]], db_name: str, protect_memory
             cur.executescript("BEGIN TRANSACTION;\n" + '\n'.join(sql_queries) + '\nEND TRANSACTION;')
         except sql.IntegrityError:
             raise ConstraintFailedError
+    con.commit()
 
 
 def create_many(objects: Union[List[T], Tuple[T]], protect_memory: bool = True) -> None:

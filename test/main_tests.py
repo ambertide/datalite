@@ -207,7 +207,7 @@ class DatabaseMassInsert(unittest.TestCase):
         _objs = fetch_all(MassCommit)
         self.assertEqual(_objs, start_tup + tuple(self.objs))
 
-    def testMassCopy(self):
+    def _testMassCopy(self):
         setattr(MassCommit, 'db_path', 'other.db')
         start_tup = fetch_all(MassCommit)
         copy_many(self.objs, 'other.db', False)
