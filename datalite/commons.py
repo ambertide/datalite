@@ -5,7 +5,7 @@ import sqlite3 as sql
 
 
 type_table: Dict[Optional[type], str] = {None: "NULL", int: "INTEGER", float: "REAL",
-                                         str: "TEXT", bytes: "BLOB"}
+                                         str: "TEXT", bytes: "BLOB", bool: "INTEGER"}
 type_table.update({Unique[key]: f"{value} NOT NULL UNIQUE" for key, value in type_table.items()})
 
 
@@ -42,6 +42,8 @@ def _convert_sql_format(value: Any) -> str:
         return f'"{value}"'
     elif isinstance(value, bytes):
         return '"' + str(value).replace("b'", "")[:-1] + '"'
+    elif isinstance(value, bool):
+        return "TRUE" if value else "FALSE"
     else:
         return str(value)
 
