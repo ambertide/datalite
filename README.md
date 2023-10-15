@@ -6,7 +6,8 @@
 [![PyPI license](https://img.shields.io/pypi/l/datalite.svg)](https://pypi.python.org/pypi/datalite/)
 [![Documentation Status](https://readthedocs.org/projects/datalite/badge/?version=latest)](https://datalite.readthedocs.io/en/latest/?badge=latest)
 
-**THIS PACKAGE IS NOT PRODUCTION READY**
+> [!WARNING]  
+> This project is a hobby project and it should not be used for security-critical or user facing applications.
 
 It should be noted that Datalite is not suitable for secure web applications, it really is only suitable for cases when you can trust user input.
 
