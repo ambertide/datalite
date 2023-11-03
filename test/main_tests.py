@@ -16,6 +16,7 @@ class TestClass:
     byte_value: bytes = b'a'
     float_value: float = 0.4
     str_value: str = 'a'
+    bool_value: bool = True
 
     def __eq__(self, other):
         return asdict(self) == asdict(other)
