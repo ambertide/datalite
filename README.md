@@ -85,7 +85,8 @@ Object IDs are auto-incremented, and correspond to the order the entry were
 inserted onto the system.
 
 ## Fetching Records
-> :warning: **Limitation! Fetch can only fetch limited classes correctly**: int, float, bytes and str!
+> [!WARNING]
+> **Limitation! Fetch can only fetch limited classes correctly**: int, float, bytes and str!
 
 Finally, you may wish to recreate objects from a table that already exist, for
 this purpose we have the module `fetch` module, from this you can import `
